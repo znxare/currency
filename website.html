@@ -368,10 +368,12 @@
         receiptSection.style.display = 'block';
     });
 
-    document.getElementById('clearSignature').addEventListener('click', function () {
-        const signaturePad = document.getElementById('signaturePad');
-        const context = signaturePad.getContext('2d');
-        context.clearRect(0, 0, signaturePad.width, signaturePad.height);
+<div class="form-group">
+    <label for="signature">Signature:</label>
+    <canvas id="signaturePad" class="signature-pad"></canvas>
+    <button type="button" class="btn btn-danger btn-sm mt-2" id="clearSignature">Clear Signature</button>
+</div>
+
     });
 
     document.getElementById('downloadReceipt').addEventListener('click', function () {
@@ -385,6 +387,7 @@
 
     animateRate();
 });
+<script src="https://cdnjs.cloudflare.com/ajax/libs/signature_pad/2.3.2/signature_pad.min.js"></script>
 
     </script>
 </body>
