@@ -40,16 +40,24 @@
             color: #28a745;
             font-weight: bold;
             margin-top: 20px;
+            text-align: center;
         }
         .animated-rate {
             display: inline-block;
+        }
+        .form-control::placeholder {
+            font-weight: lighter;
+        }
+        .logo-icon {
+            font-size: 2em;
+            color: #007bff;
         }
     </style>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <a class="navbar-brand" href="#">
-            <img src="your-logo-url.png" alt="Logo" height="50">
+            <i class="fas fa-university logo-icon"></i>
             United Bank Transfer
         </a>
     </nav>
@@ -58,11 +66,10 @@
         <div class="row">
             <div class="col-md-6 offset-md-3">
                 <h1 class="text-center">Transfer AED to India</h1>
-                <div id="exchangeRate">Current Rate: <span class="animated-rate" id="animatedRate">21.00</span> INR</div>
+                <div id="exchangeRate">Current Transfer Rate: <span class="animated-rate" id="animatedRate">21.00</span> INR</div>
                 <form id="calculator" class="mt-4">
                     <div class="form-group">
-                        <label for="amount">Amount (AED):</label>
-                        <input type="number" class="form-control" id="amount" required>
+                        <input type="number" class="form-control" id="amount" placeholder="Enter how much AED you want to send to India?" required>
                     </div>
                     <button type="submit" class="btn btn-primary btn-block">Calculate</button>
                 </form>
@@ -201,94 +208,69 @@
             const receiptEmail = document.getElementById('receiptEmail');
             const receiptAmount = document.getElementById('receiptAmount');
             const receiptSignature = document.getElementById('receiptSignature');
-            const downloadReceipt = document.getElementById('downloadReceipt');
-            const signaturePad = document.getElementById('signaturePad');
-            const clearSignature = document.getElementById('clearSignature');
-            
-            // Animate exchange rate
-            let rate = 21.00;
-            const targetRate = 23.50;
-            const rateStep = 0.05;
-            const rateInterval = setInterval(() => {
-                if (rate < targetRate) {
-                    rate += rateStep;
-                    animatedRateElement.textContent = rate.toFixed(2);
-                } else {
-                    clearInterval(rateInterval);
-                    animatedRateElement.textContent = targetRate.toFixed(2);
-                }
-            }, 50);
 
-            calculator.addEventListener('submit', function (event) {
-                event.preventDefault();
+            function animateRate() {
+                let rate = 21.00;
+                const targetRate = 23.50;
+                const increment = 0.10;
+
+                const interval = setInterval(() => {
+                    rate += increment;
+                    if (rate >= targetRate) {
+                        rate = targetRate;
+                        clearInterval(interval);
+                    }
+                    animatedRateElement.textContent = rate.toFixed(2);
+                }, 100);
+            }
+
+            calculator.addEventListener('submit', function (e) {
+                e.preventDefault();
                 const amount = parseFloat(document.getElementById('amount').value);
-                const exchangeRate = 23.50;
-                const convertedAmount = amount * exchangeRate;
-                resultElement.textContent = `You will get ${convertedAmount.toFixed(2)} INR`;
+                const exchangeRate = 23.5;
+                const result = amount * exchangeRate;
+                resultElement.textContent = `You will receive ${result.toFixed(2)} INR`;
+
                 sendNowSection.style.display = 'block';
             });
 
             sendNowBtn.addEventListener('click', function () {
-                sendNowSection.style.display = 'block';
-                window.scrollTo(0, document.body.scrollHeight);
+                document.getElementById('sendNowSection').style.display = 'block';
             });
 
-            sendMoneyForm.addEventListener('submit', function (event) {
-                event.preventDefault();
-                receiptName.textContent = document.getElementById('fullName').value;
-                receiptEmail.textContent = document.getElementById('email').value;
-                receiptAmount.textContent = document.getElementById('amount').value;
+            sendMoneyForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                const fullName = document.getElementById('fullName').value;
+                const email = document.getElementById('email').value;
+                const amount = document.getElementById('amount').value;
+
+                receiptName.textContent = fullName;
+                receiptEmail.textContent = email;
+                receiptAmount.textContent = `${amount} AED`;
+
+                const signaturePad = document.getElementById('signaturePad');
                 const signatureDataUrl = signaturePad.toDataURL();
-                receiptSignature.src = signatureDataUrl;
+                document.getElementById('receiptSignature').src = signatureDataUrl;
+
                 receiptSection.style.display = 'block';
-                window.scrollTo(0, document.body.scrollHeight);
             });
 
-            clearSignature.addEventListener('click', function () {
+            document.getElementById('clearSignature').addEventListener('click', function () {
+                const signaturePad = document.getElementById('signaturePad');
                 const context = signaturePad.getContext('2d');
                 context.clearRect(0, 0, signaturePad.width, signaturePad.height);
             });
 
-            signaturePad.addEventListener('mousedown', function (e) {
-                isDrawing = true;
-                currentX = e.offsetX;
-                currentY = e.offsetY;
+            document.getElementById('downloadReceipt').addEventListener('click', function () {
+                html2canvas(receiptContent).then(canvas => {
+                    const link = document.createElement('a');
+                    link.download = 'receipt.png';
+                    link.href = canvas.toDataURL();
+                    link.click();
+                });
             });
 
-            signaturePad.addEventListener('mousemove', function (e) {
-                if (isDrawing) {
-                    drawLine(signaturePad.getContext('2d'), currentX, currentY, e.offsetX, e.offsetY);
-                    currentX = e.offsetX;
-                    currentY = e.offsetY;
-                }
-            });
-
-            signaturePad.addEventListener('mouseup', function () {
-                isDrawing = false;
-            });
-
-            signaturePad.addEventListener('mouseout', function () {
-                isDrawing = false;
-            });
-
-            function drawLine(context, x1, y1, x2, y2) {
-                context.beginPath();
-                context.moveTo(x1, y1);
-                context.lineTo(x2, y2);
-                context.stroke();
-                context.closePath();
-            }
-
-            downloadReceipt.addEventListener('click', function () {
-                const receiptHTML = receiptContent.innerHTML;
-                const blob = new Blob([receiptHTML], { type: 'text/html' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'receipt.html';
-                a.click();
-                URL.revokeObjectURL(url);
-            });
+            animateRate();
         });
     </script>
 </body>
