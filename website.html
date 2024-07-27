@@ -182,7 +182,7 @@
                     <p><strong>Full Name:</strong> <span id="receiptName"></span></p>
                     <p><strong>Email:</strong> <span id="receiptEmail"></span></p>
                     <p><strong>Amount:</strong> <span id="receiptAmount"></span></p>
-                    <p><strong>Exchange Rate:</strong> 23.5 INR to AED</p>
+                    <p><strong>Exchange Rate:</strong> <span id="receiptRate">23.5</span> INR to AED</p>
                     <p><strong>Charges:</strong> 15 AED (Joining) + 1 AED (Transaction)</p>
                     <img id="receiptSignature" src="" alt="Signature">
                 </div>
@@ -194,6 +194,7 @@
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@0.4.1/dist/html2canvas.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const calculator = document.getElementById('calculator');
@@ -207,6 +208,7 @@
             const receiptName = document.getElementById('receiptName');
             const receiptEmail = document.getElementById('receiptEmail');
             const receiptAmount = document.getElementById('receiptAmount');
+            const receiptRate = document.getElementById('receiptRate');
             const receiptSignature = document.getElementById('receiptSignature');
 
             function animateRate() {
@@ -227,7 +229,19 @@
             calculator.addEventListener('submit', function (e) {
                 e.preventDefault();
                 const amount = parseFloat(document.getElementById('amount').value);
-                const exchangeRate = 23.5;
+                let exchangeRate = 23.50;
+
+                if (amount > 2000 && amount <= 2500) {
+                    exchangeRate = 23.60;
+                    alert('The current rate for amounts over 2000 AED is 23.60 INR');
+                } else if (amount > 2500 && amount <= 3000) {
+                    exchangeRate = 23.70;
+                    alert('The current rate for amounts over 2500 AED is 23.70 INR');
+                } else if (amount > 3000) {
+                    exchangeRate = 23.80;
+                    alert('The current rate for amounts over 3000 AED is 23.80 INR');
+                }
+
                 const result = amount * exchangeRate;
                 resultElement.textContent = `You will receive ${result.toFixed(2)} INR`;
 
@@ -243,10 +257,12 @@
                 const fullName = document.getElementById('fullName').value;
                 const email = document.getElementById('email').value;
                 const amount = document.getElementById('amount').value;
+                const exchangeRate = parseFloat(animatedRateElement.textContent);
 
                 receiptName.textContent = fullName;
                 receiptEmail.textContent = email;
                 receiptAmount.textContent = `${amount} AED`;
+                receiptRate.textContent = `${exchangeRate.toFixed(2)} INR to AED`;
 
                 const signaturePad = document.getElementById('signaturePad');
                 const signatureDataUrl = signaturePad.toDataURL();
