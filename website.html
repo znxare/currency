@@ -156,16 +156,28 @@
                 <h2>Send Money</h2>
                 <form id="sendMoneyForm">
                     <div class="form-group">
-                        <label for="fullName">Full Name:</label>
+                        <label for="fullName">Enter your full name:</label>
                         <input type="text" class="form-control" id="fullName" required>
                     </div>
                     <div class="form-group">
-                        <label for="email">Email:</label>
+                        <label for="email">Enter email:</label>
                         <input type="email" class="form-control" id="email" required>
                     </div>
                     <div class="form-group">
-                        <label for="mobileNo">Mobile No:</label>
+                        <label for="mobileNo">Enter mobile no:</label>
                         <input type="text" class="form-control" id="mobileNo" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="receiverName">Enter receiver's name:</label>
+                        <input type="text" class="form-control" id="receiverName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="receiverUPI">Enter UPI of receiver:</label>
+                        <input type="text" class="form-control" id="receiverUPI" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="receiverBankDetails">Enter bank details:</label>
+                        <textarea class="form-control" id="receiverBankDetails" rows="3" required></textarea>
                     </div>
                     <div class="form-group">
                         <label for="signature">Signature:</label>
@@ -184,18 +196,21 @@
                 <h2>Receipt</h2>
                 <div id="receiptContent">
                     <p><strong>Receipt No:</strong> <span id="receiptNo"></span></p>
-                    <p><strong>Receipt Time:</strong> <span id="receiptTime"></span></p>
+                    <p><strong>Date & Time:</strong> <span id="receiptTime"></span></p>
                     <p><strong>Name:</strong> <span id="receiptName"></span></p>
                     <p><strong>Email:</strong> <span id="receiptEmail"></span></p>
                     <p><strong>Mobile No:</strong> <span id="receiptMobileNo"></span></p>
                     <p><strong>Amount:</strong> <span id="receiptAmount"></span></p>
-                    <p><strong>Rate:</strong> <span id="receiptRate"></span></p>
-                    <p><strong>Charges:</strong> 15 AED (Joining) + 1 AED (Transaction)</p>
-                    <img id="receiptSignature" src="" alt="Signature" class="mt-3">
-                    <p><strong>Signed by United Bank Transfer</strong></p>
+                    <p><strong>Exchange Rate:</strong> <span id="receiptRate"></span></p>
+                    <p><strong>Receiver's Name:</strong> <span id="receiptReceiverName"></span></p>
+                    <p><strong>Receiver's UPI:</strong> <span id="receiptReceiverUPI"></span></p>
+                    <p><strong>Receiver's Bank Details:</strong> <span id="receiptReceiverBankDetails"></span></p>
+                    <p><strong>Signature:</strong></p>
+                    <img id="receiptSignature" src="" alt="Signature" class="img-fluid">
+                    <p><strong>United Bank Transfer</strong></p>
                     <p><small>Note: This is an automatically generated receipt.</small></p>
                 </div>
-                <button id="sendWhatsApp" class="btn btn-success btn-block">Send via WhatsApp</button>
+                <button id="sendWhatsApp" class="btn btn-success btn-block">Talk to Our Customer Care</button>
             </div>
         </div>
     </div>
@@ -210,7 +225,7 @@
             const resultElement = document.getElementById('result');
             const animatedRateElement = document.getElementById('animatedRate');
             const sendNowBtn = document.getElementById('sendNowBtn');
-            const sendNowSection = document.querySelector('.send-now');
+            const sendNowSection = document.getElementById('sendNowSection');
             const sendMoneyForm = document.getElementById('sendMoneyForm');
             const receiptSection = document.getElementById('receiptSection');
             const receiptContent = document.getElementById('receiptContent');
@@ -219,9 +234,11 @@
             const receiptMobileNo = document.getElementById('receiptMobileNo');
             const receiptAmount = document.getElementById('receiptAmount');
             const receiptRate = document.getElementById('receiptRate');
-            const receiptSignature = document.getElementById('receiptSignature');
             const receiptNo = document.getElementById('receiptNo');
             const receiptTime = document.getElementById('receiptTime');
+            const receiptReceiverName = document.getElementById('receiptReceiverName');
+            const receiptReceiverUPI = document.getElementById('receiptReceiverUPI');
+            const receiptReceiverBankDetails = document.getElementById('receiptReceiverBankDetails');
 
             function animateRate() {
                 let rate = 21.00;
@@ -264,7 +281,7 @@
                 $('html, body').animate({
                     scrollTop: $("#sendNowSection").offset().top
                 }, 1000);
-                document.getElementById('sendNowSection').style.display = 'block';
+                sendNowSection.style.display = 'block';
             });
 
             sendMoneyForm.addEventListener('submit', function (e) {
@@ -274,6 +291,9 @@
                 const mobileNo = document.getElementById('mobileNo').value;
                 const amount = document.getElementById('amount').value;
                 const exchangeRate = parseFloat(animatedRateElement.textContent);
+                const receiverName = document.getElementById('receiverName').value;
+                const receiverUPI = document.getElementById('receiverUPI').value;
+                const receiverBankDetails = document.getElementById('receiverBankDetails').value;
 
                 const currentTime = new Date();
                 const receiptNumber = Math.floor(Math.random() * 1000000);
@@ -283,14 +303,21 @@
                 receiptMobileNo.textContent = mobileNo;
                 receiptAmount.textContent = `${amount} AED`;
                 receiptRate.textContent = `${exchangeRate.toFixed(2)} INR to AED`;
+                receiptReceiverName.textContent = receiverName;
+                receiptReceiverUPI.textContent = receiverUPI;
+                receiptReceiverBankDetails.textContent = receiverBankDetails;
                 receiptNo.textContent = receiptNumber;
                 receiptTime.textContent = currentTime.toLocaleString();
 
                 const signaturePad = document.getElementById('signaturePad');
+                const context = signaturePad.getContext('2d');
                 const signatureDataUrl = signaturePad.toDataURL();
                 document.getElementById('receiptSignature').src = signatureDataUrl;
 
                 receiptSection.style.display = 'block';
+                $('html, body').animate({
+                    scrollTop: $("#receiptSection").offset().top
+                }, 1000);
             });
 
             document.getElementById('clearSignature').addEventListener('click', function () {
@@ -302,8 +329,8 @@
             document.getElementById('sendWhatsApp').addEventListener('click', function () {
                 html2canvas(receiptContent).then(canvas => {
                     const imgData = canvas.toDataURL('image/png');
-                    const message = encodeURIComponent(`Hey, I want to send money to India. Here is my receipt. Kindly share the bank details.\n\n${imgData}`);
-                    const whatsappUrl = `https://wa.me/?text=${message}`;
+                    const message = `Hey, I want to send money to India. Here is my receipt. Kindly share the bank details. ${imgData}`;
+                    const whatsappUrl = `https://wa.me/971567881567?text=${encodeURIComponent(message)}`;
                     window.open(whatsappUrl, '_blank');
                 });
             });
