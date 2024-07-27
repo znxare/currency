@@ -157,27 +157,27 @@
                 <form id="sendMoneyForm">
                     <div class="form-group">
                         <label for="fullName">Enter your full name:</label>
-                        <input type="text" class="form-control" id="fullName" required>
+                        <input type="text" class="form-control" id="fullName" placeholder="Enter your full name" required>
                     </div>
                     <div class="form-group">
                         <label for="email">Enter email:</label>
-                        <input type="email" class="form-control" id="email" required>
+                        <input type="email" class="form-control" id="email" placeholder="Enter email" required>
                     </div>
                     <div class="form-group">
                         <label for="mobileNo">Enter mobile no:</label>
-                        <input type="text" class="form-control" id="mobileNo" required>
+                        <input type="text" class="form-control" id="mobileNo" placeholder="Enter mobile no" required>
                     </div>
                     <div class="form-group">
                         <label for="receiverName">Enter receiver's name:</label>
-                        <input type="text" class="form-control" id="receiverName" required>
+                        <input type="text" class="form-control" id="receiverName" placeholder="Enter receiver's name" required>
                     </div>
                     <div class="form-group">
                         <label for="receiverUPI">Enter UPI of receiver:</label>
-                        <input type="text" class="form-control" id="receiverUPI" required>
+                        <input type="text" class="form-control" id="receiverUPI" placeholder="Enter UPI of receiver" required>
                     </div>
                     <div class="form-group">
                         <label for="receiverBankDetails">Enter bank details:</label>
-                        <textarea class="form-control" id="receiverBankDetails" rows="3" required></textarea>
+                        <textarea class="form-control" id="receiverBankDetails" placeholder="Enter bank details" rows="3" required></textarea>
                     </div>
                     <div class="form-group">
                         <label for="signature">Signature:</label>
@@ -274,14 +274,14 @@
                 const result = amount * exchangeRate;
                 resultElement.textContent = `You will receive ${result.toFixed(2)} INR`;
 
-                sendNowSection.style.display = 'block';
+                document.querySelector('.send-now').style.display = 'block';
             });
 
             sendNowBtn.addEventListener('click', function () {
+                sendNowSection.style.display = 'block';
                 $('html, body').animate({
                     scrollTop: $("#sendNowSection").offset().top
                 }, 1000);
-                sendNowSection.style.display = 'block';
             });
 
             sendMoneyForm.addEventListener('submit', function (e) {
