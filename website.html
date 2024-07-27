@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AMSEND-IND</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        h1, h2 {
+            color: #343a40;
+        }
+
+        .result, .real-time-rate, .savings, .send-now-section {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .navbar {
+            margin-bottom: 20px;
+        }
+
+        .signature-pad {
+            border: 1px solid #ccc;
+            width: 100%;
+            height: 200px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">AMSEND-IND</a>
+    </nav>
+
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-6 offset-md-3">
+                <h1 class="text-center">Currency Calculator</h1>
+                <form id="calculator">
+                    <div class="form-group">
+                        <label for="amount">Amount:</label>
+                        <input type="number" class="form-control" id="amount" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="fromCurrency">From:</label>
+                        <select class="form-control" id="fromCurrency">
+                            <option value="INR">INR</option>
+                            <option value="AED">AED</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="toCurrency">To:</label>
+                        <select class="form-control" id="toCurrency">
+                            <option value="INR">INR</option>
+                            <option value="AED">AED</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Calculate</button>
+                </form>
+                <div class="result mt-3">
+                    <h2 id="result"></h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-6 offset-md-3">
+                <h2 class="real-time-rate">Real-Time Transfer Rate (INR to AED): <span id="realTimeRate"></span></h2>
+                <h3 class="savings">Savings with AMSEND-IND: <span id="savings"></span></h3>
+                <button class="btn btn-success btn-block" id="sendNowBtn">Send Now</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mt-5 send-now-section" id="sendNowSection" style="display: none;">
+        <div class="row">
+            <div class="col-md-6 offset-md-3">
+                <h2>Send Money</h2>
+                <form id="sendMoneyForm">
+                    <div class="form-group">
+                        <label for="fullName">Full Name:</label>
+                        <input type="text" class="form-control" id="fullName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <input type="email" class="form-control" id="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signature">Signature:</label>
+                        <canvas id="signaturePad" class="signature-pad"></canvas>
+                        <button type="button" class="btn btn-danger btn-sm mt-2" id="clearSignature">Clear Signature</button>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Generate Receipt</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mt-5" id="receiptSection" style="display: none;">
+        <div class="row">
+            <div class="col-md-6 offset-md-3">
+                <h2>Receipt</h2>
+                <div id="receiptContent">
+                    <p><strong>Full Name:</strong> <span id="receiptName"></span></p>
+                    <p><strong>Email:</strong> <span id="receiptEmail"></span></p>
+                    <p><strong>Amount:</strong> <span id="receiptAmount"></span></p>
+                    <p><strong>Exchange Rate:</strong> 22.5 INR to AED</p>
+                    <p><strong>Charges:</strong> 15 AED (Joining) + 1 AED (Transaction)</p>
+                    <img id="receiptSignature" src="" alt="Signature">
+                </div>
+                <button id="downloadReceipt" class="btn btn-success btn-block">Download Receipt</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const calculator = document.getElementById('calculator');
+            const resultElement = document.getElementById('result');
+            const realTimeRateElement = document.getElementById('realTimeRate');
+            const savingsElement = document.getElementById('savings');
+            const sendNowBtn = document.getElementById('sendNowBtn');
+            const sendNowSection = document.getElementById('sendNowSection');
+            const sendMoneyForm = document.getElementById('sendMoneyForm');
+            const receiptSection = document.getElementById('receiptSection');
+            const receiptContent = document.getElementById('receiptContent');
+            const receiptName = document.getElementById('receiptName');
+            const receiptEmail = document.getElementById('receiptEmail');
+            const receiptAmount = document.getElementById('receiptAmount');
+            const receiptSignature = document.getElementById('receiptSignature');
+            const downloadReceipt = document.getElementById('downloadReceipt');
+            const signaturePad = document.getElementById('signaturePad');
+            const clearSignature = document.getElementById('clearSignature');
+            const context = signaturePad.getContext('2d');
+            let isDrawing = false;
+            let currentX = 0;
+            let currentY = 0;
+
+            // Fetch real-time rate from Google and calculate savings
+            async function fetchRealTimeRate() {
+                try {
+                    const response = await fetch('https://api.exchangerate-api.com/v4/latest/INR');
+                    const data = await response.json();
+                    const realTimeRate = data.rates.AED;
+                    realTimeRateElement.textContent = realTimeRate.toFixed(2);
+                    const savings = (realTimeRate - 22.5) * 100 / 22.5;
+                    savingsElement.textContent = `${savings.toFixed(2)}%`;
+                } catch (error) {
+                    console.error('Error fetching real-time rate:', error);
+                }
+            }
+
+            fetchRealTimeRate();
+
+            calculator.addEventListener('submit', function (e) {
+                e.preventDefault();
+                const amount = parseFloat(document.getElementById('amount').value);
+                const fromCurrency = document.getElementById('fromCurrency').value;
+                const toCurrency = document.getElementById('toCurrency').value;
+                let result;
+
+                if (fromCurrency === 'INR' && toCurrency === 'AED') {
+                    result = amount / 22.5;
+                } else if (fromCurrency === 'AED' && toCurrency === 'INR') {
+                    result = amount * 23.5;
+                } else {
+                    result = amount;
+                }
+
+                resultElement.textContent = `Converted Amount: ${result.toFixed(2)} ${toCurrency}`;
+            });
+
+            sendNowBtn.addEventListener('click', function () {
+                sendNowSection.style.display = 'block';
+                window.scrollTo(0, document.body.scrollHeight);
+            });
+
+            sendMoneyForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                const fullName = document.getElementById('fullName').value;
+                const email = document.getElementById('email').value;
+                const amount = document.getElementById('amount').value;
+
+                receiptName.textContent = fullName;
+                receiptEmail.textContent = email;
+                receiptAmount.textContent = amount;
+
+                const signatureDataUrl = signaturePad.toDataURL();
+                receiptSignature.src = signatureDataUrl;
+
+                receiptSection.style.display = 'block';
+                window.scrollTo(0, document.body.scrollHeight);
+            });
+
+            clearSignature.addEventListener('click', function () {
+                context.clearRect(0, 0, signaturePad.width, signaturePad.height);
+            });
+
+            signaturePad.addEventListener('mousedown', function (e) {
+                isDrawing = true;
+                currentX = e.offsetX;
+                currentY = e.offsetY;
+            });
+
+            signaturePad.addEventListener('mousemove', function (e) {
+                if (isDrawing) {
+                    drawLine(context, currentX, currentY, e.offsetX, e.offsetY);
+                    currentX = e.offsetX;
+                    currentY = e.offsetY;
+                }
+            });
+
+            signaturePad.addEventListener('mouseup', function () {
+                isDrawing = false;
+            });
+
+            signaturePad.addEventListener('mouseout', function () {
+                isDrawing = false;
+            });
+
+            function drawLine(context, x1, y1, x2, y2) {
+                context.beginPath();
+                context.moveTo(x1, y1);
+                context.lineTo(x2, y2);
+                context.stroke();
+                context.closePath();
+            }
+
+            downloadReceipt.addEventListener('click', function () {
+                const receiptHTML = receiptContent.innerHTML;
+                const blob = new Blob([receiptHTML], { type: 'text/html' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'receipt.html';
+                a.click();
+                URL.revokeObjectURL(url);
+            });
+        });
+    </script>
+</body>
+</html>
