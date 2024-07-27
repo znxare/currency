@@ -3,198 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>United Bank Transfer</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <title>X Transfer</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/signature_pad/2.3.2/signature_pad.min.js"></script>
     <style>
-        body {
-            background-color: #f8f9fa;
-        }
-        h1, h2 {
-            color: #343a40;
-        }
-        .result, .send-now-section {
-            text-align: center;
-            margin-top: 20px;
-        }
-        .navbar {
-            margin-bottom: 20px;
-        }
         .signature-pad {
-            border: 1px solid #ccc;
+            border: 1px solid #000;
             width: 100%;
             height: 200px;
         }
-        .benefits-grid {
-            margin-top: 20px;
-        }
-        .benefits-grid i {
-            font-size: 2em;
-            margin-bottom: 10px;
-        }
-        .testimonial-carousel {
-            margin-top: 40px;
-        }
-        #exchangeRate {
-            font-size: 2em;
-            color: #28a745;
-            font-weight: bold;
-            margin-top: 20px;
+        #animatedRate {
+            font-size: 1.5rem;
             text-align: center;
         }
-        .animated-rate {
-            display: inline-block;
-        }
-        .form-control::placeholder {
-            font-weight: lighter;
-        }
-        .logo-icon {
-            font-size: 2em;
-            color: #007bff;
+        .receipt-section {
+            display: none;
         }
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="#">
-            <i class="fas fa-university logo-icon"></i>
-            United Bank Transfer
-        </a>
-    </nav>
-
     <div class="container mt-5">
-        <div class="row">
-            <div class="col-md-6 offset-md-3">
-                <h1 class="text-center">Transfer AED to India</h1>
-                <div id="exchangeRate">Current Transfer Rate: <span class="animated-rate" id="animatedRate">21.00</span> INR</div>
-                <form id="calculator" class="mt-4">
-                    <div class="form-group">
-                        <input type="number" class="form-control" id="amount" placeholder="Enter how much AED you want to send to India?" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary btn-block">Calculate</button>
-                </form>
-                <div class="result mt-3">
-                    <h2 id="result"></h2>
+        <header class="text-center mb-5">
+            <h1>X Transfer</h1>
+            <h2>Fast Transfers - Average Transfer Time: 200 Min 24/7</h2>
+        </header>
+        <section>
+            <form id="calculator" class="mb-5">
+                <div class="form-group">
+                    <label for="amount">Enter how much AED you want to send to India?</label>
+                    <input type="number" id="amount" class="form-control" placeholder="Enter amount in AED" required>
                 </div>
-                <div class="send-now mt-3" style="display: none;">
-                    <button class="btn btn-success btn-block" id="sendNowBtn">Send Money Now with Special Offer!</button>
+                <div id="animatedRate">Current Transfer Rate: 21.00</div>
+                <button type="submit" class="btn btn-primary btn-block mt-3">Calculate</button>
+                <div id="result" class="mt-3"></div>
+            </form>
+        </section>
+        <section class="send-now" style="display:none;">
+            <button class="btn btn-success btn-block" id="sendNowBtn">Send Money Now with Special Offer!</button>
+        </section>
+        <section id="sendMoneySection" style="display:none;">
+            <form id="sendMoneyForm" class="mt-5">
+                <div class="form-group">
+                    <label for="fullName">Full Name:</label>
+                    <input type="text" id="fullName" class="form-control" required>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="container benefits-grid">
-        <div class="row text-center">
-            <div class="col-md-4">
-                <i class="fas fa-money-bill-wave"></i>
-                <h3>Best Exchange Rates</h3>
-                <p>We offer the most competitive exchange rates.</p>
-            </div>
-            <div class="col-md-4">
-                <i class="fas fa-clock"></i>
-                <h3>Fast Transfers</h3>
-                <p>Quick and reliable transfer process.</p>
-            </div>
-            <div class="col-md-4">
-                <i class="fas fa-lock"></i>
-                <h3>Secure Transactions</h3>
-                <p>Your money is safe with our secure system.</p>
-            </div>
-        </div>
-    </div>
-
-    <div class="container testimonial-carousel">
-        <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
-            <ol class="carousel-indicators">
-                <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
-                <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
-                <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
-            </ol>
-            <div class="carousel-inner">
-                <div class="carousel-item active">
-                    <div class="carousel-caption">
-                        <h5>Ravi Kumar</h5>
-                        <p>"United Bank Transfer provided me with the best rates and quick service. Highly recommended!"</p>
-                    </div>
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" class="form-control" required>
                 </div>
-                <div class="carousel-item">
-                    <div class="carousel-caption">
-                        <h5>Anita Sharma</h5>
-                        <p>"The process was seamless and the support team was very helpful. Great experience!"</p>
-                    </div>
+                <div class="form-group">
+                    <label for="mobileNo">Mobile No:</label>
+                    <input type="text" id="mobileNo" class="form-control" required>
                 </div>
-                <div class="carousel-item">
-                    <div class="carousel-caption">
-                        <h5>Manoj Singh</h5>
-                        <p>"I have been using this service for a year now and it has always been reliable and fast."</p>
-                    </div>
+                <div class="form-group">
+                    <label for="signature">Signature:</label>
+                    <canvas id="signaturePad" class="signature-pad"></canvas>
+                    <button type="button" class="btn btn-danger btn-sm mt-2" id="clearSignature">Clear Signature</button>
                 </div>
+                <button type="submit" class="btn btn-primary btn-block">Generate Receipt</button>
+            </form>
+        </section>
+        <section id="receiptSection" class="receipt-section mt-5">
+            <div id="receiptContent">
+                <h3 class="text-center">Receipt</h3>
+                <p><strong>Receipt No:</strong> <span id="receiptNo"></span></p>
+                <p><strong>Receipt Time:</strong> <span id="receiptTime"></span></p>
+                <p><strong>Name:</strong> <span id="receiptName"></span></p>
+                <p><strong>Email:</strong> <span id="receiptEmail"></span></p>
+                <p><strong>Mobile No:</strong> <span id="receiptMobileNo"></span></p>
+                <p><strong>Amount:</strong> <span id="receiptAmount"></span></p>
+                <p><strong>Rate:</strong> <span id="receiptRate"></span></p>
+                <img id="receiptSignature" src="" alt="Signature" class="mt-3">
+                <p><strong>Signed by United Bank Transfer</strong></p>
+                <p><strong>Disclaimer:</strong> This is an automatically generated receipt.</p>
             </div>
-            <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="sr-only">Previous</span>
-            </a>
-            <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="sr-only">Next</span>
-            </a>
-        </div>
+            <button id="whatsappBtn" class="btn btn-success btn-block mt-3">Click here to receive bank details by our customer service agent</button>
+        </section>
     </div>
-
-    <div class="container mt-5 text-center">
-        <button class="btn btn-success" id="contactUsBtn">
-            <i class="fab fa-whatsapp"></i> Contact Us
-        </button>
-        <button class="btn btn-primary" id="joinUpdatesBtn">
-            <i class="fas fa-envelope"></i> Join Our Updates
-        </button>
-    </div>
-
-    <div class="container mt-5 send-now-section" id="sendNowSection" style="display: none;">
-        <div class="row">
-            <div class="col-md-6 offset-md-3">
-                <h2>Send Money</h2>
-                <form id="sendMoneyForm">
-                    <div class="form-group">
-                        <label for="fullName">Full Name:</label>
-                        <input type="text" class="form-control" id="fullName" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Email:</label>
-                        <input type="email" class="form-control" id="email" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="signature">Signature:</label>
-                        <canvas id="signaturePad" class="signature-pad"></canvas>
-                        <button type="button" class="btn btn-danger btn-sm mt-2" id="clearSignature">Clear Signature</button>
-                    </div>
-                    <button type="submit" class="btn btn-primary btn-block">Generate Receipt</button>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <div class="container mt-5" id="receiptSection" style="display: none;">
-        <div class="row">
-            <div class="col-md-6 offset-md-3">
-                <h2>Receipt</h2>
-                <div id="receiptContent">
-                    <p><strong>Full Name:</strong> <span id="receiptName"></span></p>
-                    <p><strong>Email:</strong> <span id="receiptEmail"></span></p>
-                    <p><strong>Amount:</strong> <span id="receiptAmount"></span></p>
-                    <p><strong>Exchange Rate:</strong> <span id="receiptRate">23.5</span> INR to AED</p>
-                    <p><strong>Charges:</strong> 15 AED (Joining) + 1 AED (Transaction)</p>
-                    <img id="receiptSignature" src="" alt="Signature">
-                </div>
-                <button id="downloadReceipt" class="btn btn-success btn-block">Download Receipt</button>
-            </div>
-        </div>
-    </div>
-
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/html2canvas@0.4.1/dist/html2canvas.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const calculator = document.getElementById('calculator');
@@ -202,14 +92,19 @@
             const animatedRateElement = document.getElementById('animatedRate');
             const sendNowBtn = document.getElementById('sendNowBtn');
             const sendNowSection = document.querySelector('.send-now');
+            const sendMoneySection = document.getElementById('sendMoneySection');
             const sendMoneyForm = document.getElementById('sendMoneyForm');
             const receiptSection = document.getElementById('receiptSection');
             const receiptContent = document.getElementById('receiptContent');
+            const receiptNo = document.getElementById('receiptNo');
+            const receiptTime = document.getElementById('receiptTime');
             const receiptName = document.getElementById('receiptName');
             const receiptEmail = document.getElementById('receiptEmail');
+            const receiptMobileNo = document.getElementById('receiptMobileNo');
             const receiptAmount = document.getElementById('receiptAmount');
             const receiptRate = document.getElementById('receiptRate');
             const receiptSignature = document.getElementById('receiptSignature');
+            const signaturePad = new SignaturePad(document.getElementById('signaturePad'));
 
             function animateRate() {
                 let rate = 21.00;
@@ -222,7 +117,7 @@
                         rate = targetRate;
                         clearInterval(interval);
                     }
-                    animatedRateElement.textContent = rate.toFixed(2);
+                    animatedRateElement.textContent = `Current Transfer Rate: ${rate.toFixed(2)}`;
                 }, 100);
             }
 
@@ -233,13 +128,13 @@
 
                 if (amount > 2000 && amount <= 2500) {
                     exchangeRate = 23.60;
-                    alert('The current rate for amounts over 2000 AED is 23.60 INR');
+                    alert('Congratulations! The current rate for amounts over 2000 AED is 23.60 INR');
                 } else if (amount > 2500 && amount <= 3000) {
                     exchangeRate = 23.70;
-                    alert('The current rate for amounts over 2500 AED is 23.70 INR');
+                    alert('Congratulations! The current rate for amounts over 2500 AED is 23.70 INR');
                 } else if (amount > 3000) {
                     exchangeRate = 23.80;
-                    alert('The current rate for amounts over 3000 AED is 23.80 INR');
+                    alert('Congratulations! The current rate for amounts over 3000 AED is 23.80 INR');
                 }
 
                 const result = amount * exchangeRate;
@@ -249,40 +144,45 @@
             });
 
             sendNowBtn.addEventListener('click', function () {
-                document.getElementById('sendNowSection').style.display = 'block';
+                sendMoneySection.style.display = 'block';
+                sendNowSection.scrollIntoView({ behavior: 'smooth' });
             });
 
             sendMoneyForm.addEventListener('submit', function (e) {
                 e.preventDefault();
                 const fullName = document.getElementById('fullName').value;
                 const email = document.getElementById('email').value;
+                const mobileNo = document.getElementById('mobileNo').value;
                 const amount = document.getElementById('amount').value;
-                const exchangeRate = parseFloat(animatedRateElement.textContent);
+                const exchangeRate = parseFloat(animatedRateElement.textContent.match(/\d+\.\d+/)[0]);
+                const currentDateTime = new Date().toLocaleString();
+                const receiptNumber = `UBT${Math.floor(Math.random() * 1000000)}`;
 
+                receiptNo.textContent = receiptNumber;
+                receiptTime.textContent = currentDateTime;
                 receiptName.textContent = fullName;
                 receiptEmail.textContent = email;
+                receiptMobileNo.textContent = mobileNo;
                 receiptAmount.textContent = `${amount} AED`;
                 receiptRate.textContent = `${exchangeRate.toFixed(2)} INR to AED`;
 
-                const signaturePad = document.getElementById('signaturePad');
                 const signatureDataUrl = signaturePad.toDataURL();
-                document.getElementById('receiptSignature').src = signatureDataUrl;
+                receiptSignature.src = signatureDataUrl;
 
                 receiptSection.style.display = 'block';
+                receiptSection.scrollIntoView({ behavior: 'smooth' });
             });
 
             document.getElementById('clearSignature').addEventListener('click', function () {
-                const signaturePad = document.getElementById('signaturePad');
-                const context = signaturePad.getContext('2d');
-                context.clearRect(0, 0, signaturePad.width, signaturePad.height);
+                signaturePad.clear();
             });
 
-            document.getElementById('downloadReceipt').addEventListener('click', function () {
+            document.getElementById('whatsappBtn').addEventListener('click', function () {
                 html2canvas(receiptContent).then(canvas => {
-                    const link = document.createElement('a');
-                    link.download = 'receipt.png';
-                    link.href = canvas.toDataURL();
-                    link.click();
+                    const imgData = canvas.toDataURL('image/png');
+                    const message = encodeURIComponent(`Hey, I want to send money to India. Here is my receipt. Kindly share the bank details.\n\n${imgData}`);
+                    const whatsappUrl = `https://wa.me/?text=${message}`;
+                    window.open(whatsappUrl, '_blank');
                 });
             });
 
