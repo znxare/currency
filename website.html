@@ -77,7 +77,7 @@
                     <h2 id="result"></h2>
                 </div>
                 <div class="send-now mt-3" style="display: none;">
-                    <button class="btn btn-success btn-block" id="sendNowBtn">Send Money Now with Special Offer!</button>
+                  <button class="btn btn-success btn-block" id="sendNowBtn">Send Money Now with Special Offer!</button>
                 </div>
             </div>
         </div>
@@ -288,6 +288,104 @@
 
             animateRate();
         });
+        document.addEventListener('DOMContentLoaded', function () {
+    const calculator = document.getElementById('calculator');
+    const resultElement = document.getElementById('result');
+    const animatedRateElement = document.getElementById('animatedRate');
+    const sendNowBtn = document.getElementById('sendNowBtn');
+    const sendNowSection = document.querySelector('.send-now');
+    const sendMoneyForm = document.getElementById('sendMoneyForm');
+    const receiptSection = document.getElementById('receiptSection');
+    const receiptContent = document.getElementById('receiptContent');
+    const receiptName = document.getElementById('receiptName');
+    const receiptEmail = document.getElementById('receiptEmail');
+    const receiptAmount = document.getElementById('receiptAmount');
+    const receiptRate = document.getElementById('receiptRate');
+    const receiptSignature = document.getElementById('receiptSignature');
+
+    function animateRate() {
+        let rate = 21.00;
+        const targetRate = 23.50;
+        const increment = 0.10;
+
+        const interval = setInterval(() => {
+            rate += increment;
+            if (rate >= targetRate) {
+                rate = targetRate;
+                clearInterval(interval);
+            }
+            animatedRateElement.textContent = rate.toFixed(2);
+        }, 100);
+    }
+
+    calculator.addEventListener('submit', function (e) {
+        e.preventDefault();
+        const amount = parseFloat(document.getElementById('amount').value);
+        let exchangeRate = 23.50;
+
+        if (amount > 2000 && amount <= 2500) {
+            exchangeRate = 23.60;
+            alert('The current rate for amounts over 2000 AED is 23.60 INR');
+        } else if (amount > 2500 && amount <= 3000) {
+            exchangeRate = 23.70;
+            alert('The current rate for amounts over 2500 AED is 23.70 INR');
+        } else if (amount > 3000) {
+            exchangeRate = 23.80;
+            alert('The current rate for amounts over 3000 AED is 23.80 INR');
+        }
+
+        const result = amount * exchangeRate;
+        resultElement.textContent = `You will receive ${result.toFixed(2)} INR`;
+
+        sendNowSection.style.display = 'block';
+    });
+
+    sendNowBtn.addEventListener('click', function () {
+        html2canvas(document.body).then(canvas => {
+            const imgData = canvas.toDataURL('image/png');
+            const message = encodeURIComponent(`Hi, I want to send money using your platform. Here's a screenshot of my transaction:\n\n${imgData}`);
+            const whatsappUrl = `https://wa.me/?text=${message}`;
+            window.open(whatsappUrl, '_blank');
+        });
+    });
+
+    sendMoneyForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        const fullName = document.getElementById('fullName').value;
+        const email = document.getElementById('email').value;
+        const amount = document.getElementById('amount').value;
+        const exchangeRate = parseFloat(animatedRateElement.textContent);
+
+        receiptName.textContent = fullName;
+        receiptEmail.textContent = email;
+        receiptAmount.textContent = `${amount} AED`;
+        receiptRate.textContent = `${exchangeRate.toFixed(2)} INR to AED`;
+
+        const signaturePad = document.getElementById('signaturePad');
+        const signatureDataUrl = signaturePad.toDataURL();
+        document.getElementById('receiptSignature').src = signatureDataUrl;
+
+        receiptSection.style.display = 'block';
+    });
+
+    document.getElementById('clearSignature').addEventListener('click', function () {
+        const signaturePad = document.getElementById('signaturePad');
+        const context = signaturePad.getContext('2d');
+        context.clearRect(0, 0, signaturePad.width, signaturePad.height);
+    });
+
+    document.getElementById('downloadReceipt').addEventListener('click', function () {
+        html2canvas(receiptContent).then(canvas => {
+            const link = document.createElement('a');
+            link.download = 'receipt.png';
+            link.href = canvas.toDataURL();
+            link.click();
+        });
+    });
+
+    animateRate();
+});
+
     </script>
 </body>
 </html>
